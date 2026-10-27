@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎓 Student Performance Analyzer</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary: #8b5cf6;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: flex;
+            gap: 2rem;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 250px;
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: calc(100vh - 4rem);
+            position: sticky;
+            top: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .info-box {
+            margin-top: auto;
+            background: linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(139,92,246,0.08) 100%);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            flex: 1;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            padding: 2.5rem 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            background: rgba(30, 41, 59, 0.5);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .form-group select, .form-group input, .form-group range {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group select:focus, .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-predict {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Result Card */
+        #result-card {
+            display: none;
+            margin-top: 2rem;
+            text-align: center;
+            padding: 2.5rem;
+            border-radius: 16px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .score-display {
+            font-family: 'Outfit', sans-serif;
+            font-size: 4.5rem;
+            font-weight: 800;
+            margin: 1rem 0;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .performance-label {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .recommendation {
+            background: rgba(30, 41, 59, 0.8);
+            border-left: 4px solid var(--primary);
+            padding: 1rem 1.5rem;
+            margin-top: 1rem;
+            border-radius: 0 8px 8px 0;
+            text-align: left;
+        }
+
+        /* Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: rgba(30, 41, 59, 0.6);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .metric-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Range Slider Customization */
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .range-container input[type="range"] {
+            flex: 1;
+            accent-color: var(--primary);
+        }
+        .range-value {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .placeholder-image {
+            width: 100%;
+            height: 300px;
+            background: rgba(30,41,59,0.5);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            border: 2px dashed rgba(255,255,255,0.1);
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>🧭 Navigation</h2>
+        <div class="nav-item active" onclick="switchTab('predict', this)">🔮 Predict Performance</div>
+        <div class="nav-item" onclick="switchTab('data', this)">📊 Data Explorer</div>
+        <div class="nav-item" onclick="switchTab('eda', this)">📈 EDA Dashboard</div>
+        <div class="nav-item" onclick="switchTab('about', this)">📘 About the Project</div>
+
+        <div class="info-box">
+            <strong>💡 How to use:</strong><br>
+            <small style="display: block; margin-top: 0.5rem; line-height: 1.4;">
+                1. Start with <b>Predict</b> to try the model<br>
+                2. Explore data in <b>Data Explorer</b><br>
+                3. View charts in <b>EDA Dashboard</b><br>
+            </small>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>🎓 Student Performance Analyzer</h1>
+            <p>AI-Powered Academic Performance Prediction & Analytics Dashboard</p>
+        </div>
+
+        <!-- Predict Tab -->
+        <div id="predict" class="tab-content active">
+            <h2 class="section-title">🔮 Predict Student Performance</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Enter student details below to get an AI-powered prediction of their academic performance based on our trained Random Forest model.</p>
+            
+            <form id="predictionForm" onsubmit="handlePrediction(event)">
+                <div class="form-grid">
+                    <div>
+                        <h3 style="margin-top: 0; color: #cbd5e1; font-weight: 500;">👤 Demographics</h3>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select id="gender">
+                                <option value="female">Female</option>
+                                <option value="male">Male</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Race / Ethnicity</label>
+                            <select id="race">
+                                <option value="group A">Group A</option>
+                                <option value="group B">Group B</option>
+                                <option selected value="group C">Group C</option>
+                                <option value="group D">Group D</option>
+                                <option value="group E">Group E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Parental Education Level</label>
+                            <select id="edu">
+                                <option value="some high school">Some high school</option>
+                                <option value="high school">High school</option>
+                                <option selected value="some college">Some college</option>
+                                <option value="associate's degree">Associate's degree</option>
+                                <option value="bachelor's degree">Bachelor's degree</option>
+                                <option value="master's degree">Master's degree</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 style="margin-top: 0; color: #cbd5e1; font-weight: 500;">📚 Academic Factors</h3>
+                        <div class="form-group">
+                            <label>Lunch Type</label>
+                            <select id="lunch">
+                                <option value="standard">Standard</option>
+                                <option value="free">Free / Reduced</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Test Preparation Course</label>
+                            <select id="prep">
+                                <option value="none">None</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Study Hours per Week</label>
+                            <div class="range-container">
+                                <input type="range" id="study" min="0" max="40" value="15" step="0.5" oninput="document.getElementById('study-val').innerText = this.value">
+                                <div class="range-value" id="study-val">15</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Attendance Rate (%)</label>
+                            <div class="range-container">
+                                <input type="range" id="att" min="30" max="100" value="85" step="1" oninput="document.getElementById('att-val').innerText = this.value + '%'">
+                                <div class="range-value" id="att-val">85%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-predict" id="predictBtn">🚀 Predict Performance</button>
+            </form>
+
+            <div id="result-card">
+                <div style="font-size: 1.1rem; opacity: 0.8; letter-spacing: 2px; text-transform: uppercase;">Predicted Average Score</div>
+                <div class="score-display" id="final-score">🌟 85.4</div>
+                <div class="performance-label" id="final-label">Good</div>
+                
+                <div style="margin-top: 2rem; text-align: left;">
+                    <h3 style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">💡 Personalized Recommendations</h3>
+                    <div id="recs-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Tab -->
+        <div id="data" class="tab-content">
+            <h2 class="section-title">📊 Data Explorer</h2>
+            
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">1,000</div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; text-transform: uppercase;">Total Students</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">79.2</div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; text-transform: uppercase;">Avg Math</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">78.5</div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; text-transform: uppercase;">Avg Reading</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">78.6</div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; text-transform: uppercase;">Avg Writing</div>
+                </div>
+            </div>
+
+            <p><strong>Note:</strong> Since this is a static HTML version, the live dataframe explorer is simplified. Imagine a fully interactive data grid here!</p>
+            <div class="placeholder-image">Interactive Data table would appear here</div>
+        </div>
+
+        <!-- EDA Tab -->
+        <div id="eda" class="tab-content">
+            <h2 class="section-title">📈 Exploratory Data Analysis Dashboard</h2>
+            <p>Visualizing the key factors that correlate with student success.</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="placeholder-image">📊 Plotly Chart: Score Distributions</div>
+                <div class="placeholder-image">🔗 Plotly Chart: Correlation Heatmap</div>
+                <div class="placeholder-image">📉 Plotly Chart: Study Hours vs Score</div>
+                <div class="placeholder-image">🎯 Plotly Chart: Socioeconomic Impact</div>
+            </div>
+        </div>
+
+        <!-- About Tab -->
+        <div id="about" class="tab-content">
+            <h2 class="section-title">📘 About the Project</h2>
+            <div style="background: rgba(30, 41, 59, 0.4); padding: 2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <p>This is a simulated front-end interface built as a single HTML file to demonstrate a UI independently from the Python/Streamlit backend.</p>
+                <p><strong>Actual capabilities in the backend Python version:</strong></p>
+                <ul>
+                    <li>Real-time exact predictions using a trained Scikit-Learn `RandomForestRegressor`.</li>
+                    <li>Feature scaling, imputation, and categorical label encoding in a data pipeline.</li>
+                    <li>Comprehensive Exploratory Data Analysis using Seaborn, Matplotlib, and Plotly.</li>
+                    <li>Interactive live tables using Pandas.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(tabId, element) {
+        // Remove active class from all tabs and nav items
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        
+        // Add active class to target
+        document.getElementById(tabId).classList.add('active');
+        element.classList.add('active');
+    }
+
+    function handlePrediction(e) {
+        e.preventDefault();
+        
+        const btn = document.getElementById('predictBtn');
+        btn.innerHTML = '⚙️ Analyzing profile...';
+        btn.style.opacity = '0.8';
+        
+        // Simulate an API call / model inference delay
+        setTimeout(() => {
+            // Very simple JS mock logic based roughly on the patterns
+            let baseScore = 65;
+            
+            const prep = document.getElementById('prep').value;
+            if (prep === 'completed') baseScore += 8;
+            
+            const lunch = document.getElementById('lunch').value;
+            if (lunch === 'standard') baseScore += 6;
+            
+            const edu = document.getElementById('edu').value;
+            const eduMap = {
+                "some high school": 0, "high school": 2, "some college": 4,
+                "associate's degree": 6, "bachelor's degree": 9, "master's degree": 12
+            };
+            baseScore += eduMap[edu];
+            
+            const studyHours = parseFloat(document.getElementById('study').value);
+            baseScore += (studyHours - 15) * 0.5;
+            
+            const att = parseFloat(document.getElementById('att').value);
+            baseScore += (att - 82) * 0.3;
+            
+            // Add slight randomness to mimic real variation
+            baseScore += (Math.random() * 4 - 2);
+            
+            let finalScore = Math.min(100, Math.max(0, baseScore)).toFixed(1);
+            
+            showResult(finalScore, studyHours, att, prep);
+            
+            btn.innerHTML = '🚀 Predict Performance';
+            btn.style.opacity = '1';
+        }, 800);
+    }
+
+    function showResult(score, studyHrs, att, prep) {
+        const card = document.getElementById('result-card');
+        const display = document.getElementById('final-score');
+        const label = document.getElementById('final-label');
+        const recsContainer = document.getElementById('recs-container');
+        
+        score = parseFloat(score);
+        let color, emoji, labelText;
+        
+        if (score >= 90) {
+            color = 'var(--success)'; emoji = '🌟'; labelText = 'Excellent';
+            card.style.background = 'linear-gradient(135deg, rgba(16,185,129,0.1) 0%, rgba(5,150,105,0.15) 100%)';
+            card.style.border = '2px solid rgba(16,185,129,0.4)';
+        } else if (score >= 75) {
+            color = '#3b82f6'; emoji = '👍'; labelText = 'Good';
+            card.style.background = 'linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(37,99,235,0.15) 100%)';
+            card.style.border = '2px solid rgba(59,130,246,0.4)';
+        } else if (score >= 60) {
+            color = 'var(--warning)'; emoji = '📊'; labelText = 'Average';
+            card.style.background = 'linear-gradient(135deg, rgba(245,158,11,0.1) 0%, rgba(217,119,6,0.15) 100%)';
+            card.style.border = '2px solid rgba(245,158,11,0.4)';
+        } else {
+            color = 'var(--danger)'; emoji = '⚠️'; labelText = 'Needs Improvement';
+            card.style.background = 'linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(220,38,38,0.15) 100%)';
+            card.style.border = '2px solid rgba(239,68,68,0.4)';
+        }
+        
+        display.innerHTML = `${emoji} ${score}`;
+        display.style.color = color;
+        label.innerHTML = labelText;
+        label.style.color = color;
+        
+        // Generate personalized recommendations
+        let recsHTML = '';
+        if (studyHrs < 15) {
+            recsHTML += `<div class="recommendation">📚 Try increasing your study hours. Students who study over 15 hours a week perform significantly better.</div>`;
+        }
+        if (prep === 'none') {
+            recsHTML += `<div class="recommendation">📝 Consider taking a test preparation course, it can boost your score by an average of 6-8 points.</div>`;
+        }
+        if (att < 85) {
+            recsHTML += `<div class="recommendation">🏫 Attendance is crucial. Try to maintain an attendance rate above 85% for optimal outcomes.</div>`;
+        }
+        if (score >= 85) {
+            recsHTML += `<div class="recommendation">🏆 Great work! Keep up these habits to maintain your excellent trajectory.</div>`;
+        }
+        if (recsHTML === '') {
+            recsHTML = `<div class="recommendation">🔍 Keep refining your current balanced approach!</div>`;
+        }
+        
+        recsContainer.innerHTML = recsHTML;
+        card.style.display = 'block';
+    }
+</script>
+</body>
+</html>

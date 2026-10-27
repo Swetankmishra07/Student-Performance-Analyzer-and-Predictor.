@@ -1,0 +1,13 @@
+{
+  "model_name": "random_forest_classification",
+  "feature_names": [
+    "gender",
+    "race_ethnicity",
+    "parental_level_of_education",
+    "lunch",
+    "test_preparation_course",
+    "study_hours_per_week",
+    "attendance_rate"
+  ],
+  "model_path": "C:\\Users\\rahul\\Desktop\\google\\outputs\\models\\random_forest_classification_model.pkl"
+}
